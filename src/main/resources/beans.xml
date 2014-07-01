@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.2.xsd
+http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.2.xsd
+http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.2.xsd
+http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd">
+
+    <context:component-scan base-package="controller,view" />
+    <tx:annotation-driven transaction-manager="transactionManager" />
+
+    <bean id="libriaServiceBean" class="model.service.LibriaServiceBean">
+        <property name="bookService" ref="bookService"/>
+        <property name="authorService" ref="authorService"/>
+        <property name="accountService" ref="accountService"/>
+        <property name="categoryService" ref="categoryService"/>
+        <property name="roomService" ref="roomService"/>
+    </bean>
+
+    <aop:aspectj-autoproxy proxy-target-class="true"/>
+
+    <bean id="accountDao" class="model.dao.AccountDao">
+        <constructor-arg value="model.entity.Account"/>
+    </bean>
+
+    <bean id="authorService" class="model.service.base.AuthorService">
+         <property name="authorDao" ref="authorDao"/>
+    </bean>
+
+    <bean id="authorDao" class="model.dao.AuthorDao">
+        <constructor-arg value="model.entity.Author"/>
+    </bean>
+
+    <bean id="accountService" class="model.service.base.AccountService">
+        <property name="accountDao" ref="accountDao"/>
+   </bean>
+
+    <bean id="categoryDao" class="model.dao.CategoryDao">
+        <constructor-arg value="model.entity.Category"/>
+    </bean>
+
+    <bean id="categoryService" class="model.service.base.CategoryService">
+        <property name="categoryDao" ref="categoryDao"/>
+    </bean>
+
+    <bean id="roomDao" class="model.dao.RoomDao">
+        <constructor-arg value="model.entity.Room"/>
+    </bean>
+
+    <bean id="roomService" class="model.service.base.RoomService">
+        <property name="roomDao" ref="roomDao"/>
+    </bean>
+
+    <bean id="bookService" class="model.service.BookService">
+        <property name="bookDao" ref="bookDao"/>
+    </bean>
+
+    <bean id="bookDao" class="model.dao.BookDao">
+        <constructor-arg value="model.entity.Book"/>
+    </bean>
+
+
+    <bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
+        <property name="entityManagerFactory" ref="entityManagerFactory"/>
+    </bean>
+
+    <bean id="entityManagerFactory"
+          class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+        <property name="dataSource" ref="dataSource"/>
+        <property name="jpaVendorAdapter" ref="jpaAdapter"/>
+        <property name="loadTimeWeaver">
+            <bean
+                    class="org.springframework.instrument.classloading.InstrumentationLoadTimeWeaver"/>
+        </property>
+    </bean>
+
+    <bean id="jpaAdapter"
+          class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter"/>
+
+    <bean
+            class="org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor"/>
+
+</beans>
